@@ -1,26 +1,58 @@
 const express = require("express");
-const { getInsightUrl, getAllInsights, deleteInsight, updateInsight } = require("../controllers/insight");
+const { isSignedIn, isAuthenticated } = require("../middlewares/auth");
+const {
+  getInsightUrl,
+  getAllInsights,
+  deleteInsight,
+  updateInsight,
+  deleteAllInsights,
+} = require("../controllers/insight");
 const { getInsightById } = require("../middlewares/insight");
+const { getUserById } = require("../middlewares/user");
 const router = express.Router();
 
-// router to access param and getInsight from Database
+// param
 router.param("insightId", getInsightById);
+router.param("userId", getUserById);
 
-// route to get insights
-router.post("/insight/search", getInsightUrl);
+//getInsight
+// @type POST
+// @route /api/v1/insight/:userId
+// @desc route to get insights of the url passed via body
+// @access PRIVATE
+router.post(
+  "/insight/:userId",
+  isSignedIn,
+  isAuthenticated,
+  getInsightUrl
+);
 
-// route to add insights to insights table
-router.post("/insights/add", );
+// getAllInsights
+// @type GET
+// @route /api/v1/insight/:userId
+// @desc route to get all insights from the insight database
+// @access PRIVATE
+router.get("/insight/:userId", isSignedIn, isAuthenticated, getAllInsights);
 
-// route to list all insights
-router.get("/insight", getAllInsights);
+// delete an insight
+// @type DELETE
+// @route /api/v1/insight/:insightId/:userId
+// @desc route to delete an insight from database
+// @access PRIVATE
+router.delete("/insight/:insightId/:userId", isSignedIn, isAuthenticated, deleteInsight);
 
-// route to remove an insights
-router.delete("/insight/:insightId", deleteInsight);
+// delete all insights
+// @type DELETE
+// @route /api/v1/insight/:userId
+// @desc route to delete all insight from database
+// @access PRIVATE
+router.delete("/insight/:userId", isSignedIn, isAuthenticated, deleteAllInsights);
 
-// route to update an insights
-router.put("/insight/:insightId", updateInsight);
-
-
+// update an insight
+// @type PUT
+// @route /api/v1/insight/:insightId/:userId
+// @desc route to update an insight from database
+// @access PRIVATE
+router.put("/insight/:insightId/:userId", isSignedIn, isAuthenticated, updateInsight);
 
 module.exports = router;

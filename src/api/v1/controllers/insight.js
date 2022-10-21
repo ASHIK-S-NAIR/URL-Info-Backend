@@ -99,6 +99,21 @@ exports.deleteInsight = async (req, res) => {
   }
 };
 
+exports.deleteAllInsights = async (req, res) => {
+  try {
+    await Insight.deleteMany();
+    return res.status(200).json({
+      status: "ok",
+      message: "All Insights has been successfully deleted",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      error: "Internal Server error",
+    });
+  }
+};
+
 exports.updateInsight = async (req, res) => {
   try {
     await Insight.findByIdAndUpdate(
