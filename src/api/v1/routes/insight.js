@@ -1,10 +1,10 @@
 const express = require("express");
-const { getInsightUrl, getAllInsights, deleteInsight } = require("../controllers/insight");
+const { getInsightUrl, getAllInsights, deleteInsight, updateInsight } = require("../controllers/insight");
 const { getInsightById } = require("../middlewares/insight");
 const router = express.Router();
 
 // router to access param and getInsight from Database
-router.param(":insightId", getInsightById);
+router.param("insightId", getInsightById);
 
 // route to get insights
 router.post("/insight/search", getInsightUrl);
@@ -19,7 +19,7 @@ router.get("/insight", getAllInsights);
 router.delete("/insight/:insightId", deleteInsight);
 
 // route to update an insights
-router.put("/insight", );
+router.put("/insight/:insightId", updateInsight);
 
 
 

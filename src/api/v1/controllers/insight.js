@@ -79,22 +79,43 @@ exports.getInsightUrl = async (req, res) => {
 
 // List all insights
 exports.getAllInsights = async (req, res) => {
-    const insights = await Insight.find({});
+  const insights = await Insight.find({});
 
-    return res.json(insights);
-}
+  return res.json(insights);
+};
 
 exports.deleteInsight = async (req, res) => {
-    try {
-        await Insight.deleteOne({_id: req.insight._id});
-        return res.status(200).json({
-            status: "ok",
-            message: "Insight has been successfully deleted"
-        })
-    } catch (error) {
-        return res.status(400).json({
-            status: "error",
-            error: "Internal Server error"
-        })
-    }
-}
+  try {
+    await Insight.deleteOne({ _id: req.insight._id });
+    return res.status(200).json({
+      status: "ok",
+      message: "Insight has been successfully deleted",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+      error: "Internal Server error",
+    });
+  }
+};
+
+exports.updateInsight = async (req, res) => {
+  try {
+    await Insight.findByIdAndUpdate(
+      { _id: req.insight._id },
+      { $set: req.body },
+      { new: true, useFindAndModify: false }
+    );
+
+    return res.status(200).json({
+      status: "ok",
+      message: "Insight has been successfully updated",
+    });
+  } catch (error) {
+    console.log("error", error.message)
+    return res.status(500).json({
+      status: "error",
+      error: "Internal Server error",
+    });
+  }
+};
