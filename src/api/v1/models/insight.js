@@ -15,6 +15,6 @@ const insightSchema = new Schema({
     type: Boolean,
     default: false,
   },
-});
+}, {timestamps: true});
 
 module.exports = model("Insight", insightSchema);

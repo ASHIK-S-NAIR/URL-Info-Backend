@@ -1,5 +1,5 @@
 const express = require("express");
-const { getInsightUrl } = require("../controllers/insight");
+const { getInsightUrl, getAllInsights } = require("../controllers/insight");
 const router = express.Router();
 
 // route to get insights
@@ -9,7 +9,7 @@ router.post("/insight/search", getInsightUrl);
 router.post("/insights/add", );
 
 // route to list all insights
-router.get("/insight", );
+router.get("/insight", getAllInsights);
 
 // route to remove an insights
 router.delete("/insight", );

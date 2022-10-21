@@ -74,5 +74,12 @@ exports.getInsightUrl = async (req, res) => {
     mediaLinks: imageArray,
   });
 
-  res.json({ result, links, imageArray });
+  return res.json({ result, links, imageArray });
 };
+
+// List all insights
+exports.getAllInsights = async (req, res) => {
+    const insights = await Insight.find({});
+
+    return res.json(insights);
+}
