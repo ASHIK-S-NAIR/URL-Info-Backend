@@ -83,3 +83,18 @@ exports.getAllInsights = async (req, res) => {
 
     return res.json(insights);
 }
+
+exports.deleteInsight = async (req, res) => {
+    try {
+        await Insight.deleteOne({_id: req.insight._id});
+        return res.status(200).json({
+            status: "ok",
+            message: "Insight has been successfully deleted"
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "error",
+            error: "Internal Server error"
+        })
+    }
+}

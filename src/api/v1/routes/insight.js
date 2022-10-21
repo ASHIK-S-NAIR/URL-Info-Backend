@@ -1,6 +1,10 @@
 const express = require("express");
-const { getInsightUrl, getAllInsights } = require("../controllers/insight");
+const { getInsightUrl, getAllInsights, deleteInsight } = require("../controllers/insight");
+const { getInsightById } = require("../middlewares/insight");
 const router = express.Router();
+
+// router to access param and getInsight from Database
+router.param(":insightId", getInsightById);
 
 // route to get insights
 router.post("/insight/search", getInsightUrl);
@@ -12,7 +16,7 @@ router.post("/insights/add", );
 router.get("/insight", getAllInsights);
 
 // route to remove an insights
-router.delete("/insight", );
+router.delete("/insight/:insightId", deleteInsight);
 
 // route to update an insights
 router.put("/insight", );
