@@ -20,7 +20,9 @@
     "html-to-text": "^8.2.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
-    "unfluff": "^3.2.0"
+    "unfluff": "^3.2.0",
+    "url-exists": "^1.0.3",
+    "valid-url": "^1.0.9"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

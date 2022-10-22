@@ -12,7 +12,10 @@ exports.getInsightUrl = async (req, res) => {
         return response.data;
       })
       .catch((error) => {
-        console.log(error);
+        return res.status(500).json({
+          status: "error",
+          error: "Internal Server error",
+        });
       });
   };
 
@@ -38,10 +41,8 @@ exports.getInsightUrl = async (req, res) => {
     return text;
   };
 
-  const { url } = req.body;
-
   // fetch the content from the URL
-  const content = await fetchUrlContent(url);
+  const content = await fetchUrlContent(req.url);
 
   // Extract text from html
   const text = convertHtmlToText(content);
@@ -59,10 +60,12 @@ exports.getInsightUrl = async (req, res) => {
 
   linkObjects.each((index, element) => {
     href = $(element).attr("href");
-    if (href.substr(0, 4) !== "http") {
-      href = `${url}/${href}`;
+    if (href) {
+      if (href.substr(0, 4) !== "http") {
+        href = `${req.url}/${href}`;
+      }
+      webLinks.push(href);
     }
-    webLinks.push(href);
   });
 
   var mediaLinks = [];
@@ -73,15 +76,21 @@ exports.getInsightUrl = async (req, res) => {
   });
 
   const insight = await Insight.create({
-    domainName: url,
+    domainName: req.url,
     wordCount: wordCount,
     webLinks: webLinks,
     mediaLinks: mediaLinks,
   });
 
-  const { favourite} = insight;
+  const { favourite } = insight;
 
-  return res.json({domainName: url, wordCount, favourite, webLinks, mediaLinks});
+  return res.json({
+    domainName: req.url,
+    wordCount,
+    favourite,
+    webLinks,
+    mediaLinks,
+  });
 };
 
 // List all insights
@@ -141,7 +150,6 @@ exports.updateInsight = async (req, res) => {
       message: "Insight has been successfully updated",
     });
   } catch (error) {
-    console.log("error", error.message);
     return res.status(500).json({
       status: "error",
       error: "Internal Server error",

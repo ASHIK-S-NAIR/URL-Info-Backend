@@ -7,7 +7,7 @@ const {
   updateInsight,
   deleteAllInsights,
 } = require("../controllers/insight");
-const { getInsightById } = require("../middlewares/insight");
+const { getInsightById, isValidUrl } = require("../middlewares/insight");
 const { getUserById } = require("../middlewares/user");
 const router = express.Router();
 
@@ -24,6 +24,7 @@ router.post(
   "/insight/:userId",
   isSignedIn,
   isAuthenticated,
+  isValidUrl,
   getInsightUrl
 );
 
@@ -39,20 +40,35 @@ router.get("/insight/:userId", isSignedIn, isAuthenticated, getAllInsights);
 // @route /api/v1/insight/:insightId/:userId
 // @desc route to delete an insight from database
 // @access PRIVATE
-router.delete("/insight/:insightId/:userId", isSignedIn, isAuthenticated, deleteInsight);
+router.delete(
+  "/insight/:insightId/:userId",
+  isSignedIn,
+  isAuthenticated,
+  deleteInsight
+);
 
 // delete all insights
 // @type DELETE
 // @route /api/v1/insight/:userId
 // @desc route to delete all insight from database
 // @access PRIVATE
-router.delete("/insight/:userId", isSignedIn, isAuthenticated, deleteAllInsights);
+router.delete(
+  "/insight/:userId",
+  isSignedIn,
+  isAuthenticated,
+  deleteAllInsights
+);
 
 // update an insight
 // @type PUT
 // @route /api/v1/insight/:insightId/:userId
 // @desc route to update an insight from database
 // @access PRIVATE
-router.put("/insight/:insightId/:userId", isSignedIn, isAuthenticated, updateInsight);
+router.put(
+  "/insight/:insightId/:userId",
+  isSignedIn,
+  isAuthenticated,
+  updateInsight
+);
 
 module.exports = router;
