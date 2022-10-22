@@ -38,7 +38,7 @@ exports.getInsightUrl = async (req, res) => {
     return text;
   };
 
-  const url = req.body.url;
+  const { url } = req.body;
 
   // fetch the content from the URL
   const content = await fetchUrlContent(url);
@@ -50,38 +50,52 @@ exports.getInsightUrl = async (req, res) => {
   const cleanedContent = clean(text);
 
   // count the word occurrence
-  const result = await countTotal(cleanedContent);
+  var wordCount = await countTotal(cleanedContent);
 
-  let links = [];
   let $ = cheerio.load(content);
+
+  var webLinks = [];
   let linkObjects = $("a");
 
   linkObjects.each((index, element) => {
-    links.push($(element).attr("href"));
+    href = $(element).attr("href");
+    if (href.substr(0, 4) !== "http") {
+      href = `${url}/${href}`;
+    }
+    webLinks.push(href);
   });
 
-  let imageArray = [];
+  var mediaLinks = [];
   let Images = $("img");
 
   Images.each((index, element) => {
-    imageArray.push($(element).attr("src"));
+    mediaLinks.push($(element).attr("src"));
   });
 
-  Insight.create({
+  const insight = await Insight.create({
     domainName: url,
-    wordCount: result,
-    webLinks: links,
-    mediaLinks: imageArray,
+    wordCount: wordCount,
+    webLinks: webLinks,
+    mediaLinks: mediaLinks,
   });
 
-  return res.json({ result, links, imageArray });
+  const { favourite} = insight;
+
+  return res.json({domainName: url, wordCount, favourite, webLinks, mediaLinks});
 };
 
 // List all insights
 exports.getAllInsights = async (req, res) => {
-  const insights = await Insight.find({});
+  try {
+    const insights = await Insight.find({});
 
-  return res.json(insights);
+    return res.json(insights);
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      error: "Internal Server error",
+    });
+  }
 };
 
 exports.deleteInsight = async (req, res) => {
@@ -92,7 +106,7 @@ exports.deleteInsight = async (req, res) => {
       message: "Insight has been successfully deleted",
     });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       status: "error",
       error: "Internal Server error",
     });
@@ -107,7 +121,7 @@ exports.deleteAllInsights = async (req, res) => {
       message: "All Insights has been successfully deleted",
     });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       status: "error",
       error: "Internal Server error",
     });
@@ -127,7 +141,7 @@ exports.updateInsight = async (req, res) => {
       message: "Insight has been successfully updated",
     });
   } catch (error) {
-    console.log("error", error.message)
+    console.log("error", error.message);
     return res.status(500).json({
       status: "error",
       error: "Internal Server error",

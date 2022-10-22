@@ -1,5 +1,6 @@
 const User = require("../models/user");
 
+// getUserById - Checks if an user exists with the userId from request path parameter is present inside the user database, if present then user details is stored inside req.user.
 exports.getUserById = async (req, res, next, id) => {
   try {
     const user = await User.findById({ _id: id });

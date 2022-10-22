@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+// isSignedIn - Middleware to check if token present on req.headers or not, if token present, Token is decoded and payload initialized to req.profile.
 exports.isSignedIn = async (req, res, next) => {
   if (
     req.headers.authorization &&
@@ -24,7 +25,7 @@ exports.isSignedIn = async (req, res, next) => {
   }
 };
 
-// isAuthenticated
+// isAuthenticated - Middleware to check if the user is authenticated for futher process. The userId from the decoded token is matched with usedId obtained from the request path parameter.
 exports.isAuthenticated = (req, res, next) => {
   const checker = req.profile && req.user && req.profile.id == req.user._id;
   if (!checker) {

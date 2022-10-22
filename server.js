@@ -21,6 +21,7 @@ const authRoute = require("./src/api/v1/routes/auth");
 app.use("/api/v1/", insightRoute);
 app.use("/api/v1/", authRoute);
 
+// default Route
 app.get("/", (req, res) => {
   res.send("Projet initialized");
 });
