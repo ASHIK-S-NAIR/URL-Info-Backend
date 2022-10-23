@@ -1,48 +1,25 @@
 const Insight = require("../models/insight");
-const axios = require("axios");
-const { convert } = require("html-to-text");
-const cheerio = require("cheerio");
+const {
+  fetchUrlContent,
+  convertHtmlToText,
+  clean,
+  countTotal,
+  extractWebLinks,
+  extractMediaLinks,
+} = require("./utils/insight");
 
+// getInsightUrl - Function to get insight of the an url like, wordCount, web links and media links.
 exports.getInsightUrl = async (req, res) => {
-  // Function to fetch the content from the URL
-  const fetchUrlContent = (url) => {
-    return axios
-      .get(url)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error) => {
-        return res.status(500).json({
-          status: "error",
-          error: "Internal Server error",
-        });
-      });
-  };
-
-  // Function to clean the content
-  const clean = (string) => {
-    const alphabet = string.replace(/[^A-Za-z']+/g, " ").trim();
-    const lowerCase = alphabet.toLowerCase();
-    return lowerCase;
-  };
-
-  // Function to count the word occurrence
-  const countTotal = (string) => {
-    const arr = string.split(" ");
-
-    const length = arr.filter((word) => word !== "").length;
-
-    return length;
-  };
-
-  // Function to extract text from html
-  const convertHtmlToText = (html) => {
-    const text = convert(html);
-    return text;
-  };
-
+  
   // fetch the content from the URL
   const content = await fetchUrlContent(req.url);
+
+  if (content.status === "error") {
+    res.status(500).json({
+      status: "error",
+      error: "Internal Server error",
+    });
+  }
 
   // Extract text from html
   const text = convertHtmlToText(content);
@@ -51,29 +28,13 @@ exports.getInsightUrl = async (req, res) => {
   const cleanedContent = clean(text);
 
   // count the word occurrence
-  var wordCount = await countTotal(cleanedContent);
+  var wordCount = countTotal(cleanedContent);
 
-  let $ = cheerio.load(content);
+  // extract webLinks from web page
+  const webLinks = extractWebLinks(content, req.url);
 
-  var webLinks = [];
-  let linkObjects = $("a");
-
-  linkObjects.each((index, element) => {
-    href = $(element).attr("href");
-    if (href) {
-      if (href.substr(0, 4) !== "http") {
-        href = `${req.url}/${href}`;
-      }
-      webLinks.push(href);
-    }
-  });
-
-  var mediaLinks = [];
-  let Images = $("img");
-
-  Images.each((index, element) => {
-    mediaLinks.push($(element).attr("src"));
-  });
+  // extract mediaLinks from web page
+  const mediaLinks = extractMediaLinks(content);
 
   const insight = await Insight.create({
     domainName: req.url,
@@ -93,7 +54,7 @@ exports.getInsightUrl = async (req, res) => {
   });
 };
 
-// List all insights
+// getAllInsights - Function to get/list all the insights from the insight collection.
 exports.getAllInsights = async (req, res) => {
   try {
     const insights = await Insight.find({});
@@ -107,6 +68,7 @@ exports.getAllInsights = async (req, res) => {
   }
 };
 
+// deleteInsight - Function to delete an insight from insight collection. InsightId obtained as path paramter and insight details stored inside req.insight by middleware.
 exports.deleteInsight = async (req, res) => {
   try {
     await Insight.deleteOne({ _id: req.insight._id });
@@ -122,6 +84,7 @@ exports.deleteInsight = async (req, res) => {
   }
 };
 
+// deleteAllInsights - Function to delete all insights from insight collection.
 exports.deleteAllInsights = async (req, res) => {
   try {
     await Insight.deleteMany();
@@ -137,6 +100,7 @@ exports.deleteAllInsights = async (req, res) => {
   }
 };
 
+// deleteInsight - Function to update an insight from insight collection. InsightId obtained as path paramter and insight details stored inside req.insight by middleware. content to be updated will be obtained from req.body.
 exports.updateInsight = async (req, res) => {
   try {
     await Insight.findByIdAndUpdate(

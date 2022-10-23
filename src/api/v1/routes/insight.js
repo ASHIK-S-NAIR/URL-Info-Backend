@@ -35,7 +35,7 @@ router.post(
 // @access PRIVATE
 router.get("/insight/:userId", isSignedIn, isAuthenticated, getAllInsights);
 
-// delete an insight
+// deleteInsight
 // @type DELETE
 // @route /api/v1/insight/:insightId/:userId
 // @desc route to delete an insight from database
@@ -47,7 +47,7 @@ router.delete(
   deleteInsight
 );
 
-// delete all insights
+// deleteAllInsights
 // @type DELETE
 // @route /api/v1/insight/:userId
 // @desc route to delete all insight from database
@@ -59,7 +59,7 @@ router.delete(
   deleteAllInsights
 );
 
-// update an insight
+// updateInsight
 // @type PUT
 // @route /api/v1/insight/:insightId/:userId
 // @desc route to update an insight from database

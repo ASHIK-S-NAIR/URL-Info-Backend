@@ -2,7 +2,7 @@ const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// signup - Function to validate inputs and store them as a new user inside user database.
+// signup - Function to validate inputs and store them as a new user inside user collection.
 exports.signup = async (req, res) => {
   const { name, email, password: plainTextPassword } = req.body;
 
@@ -29,7 +29,7 @@ exports.signup = async (req, res) => {
   const password = await bcryptjs.hash(plainTextPassword, 10);
 
   try {
-    // storing new user details inside user database.
+    // storing new user details inside user collection.
     await User.create({
       name,
       email,
@@ -51,7 +51,7 @@ exports.signup = async (req, res) => {
     .json({ status: "ok", message: "user created successfully" });
 };
 
-// Function to validate inputs and return details of user if present from user database with newly generated token.
+// Function to validate inputs and return details of user if present from user collection with newly generated token.
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
     return res.status(400).json({ status: "error", error: "Invalid password" });
   }
 
-  // get user details from user database
+  // get user details from user collection
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
       .json({ status: "error", error: "Invalid username/password" });
   }
 
-  // comparing the password from user with the encrypted password from user database using bcryptjs.
+  // comparing the password from user with the encrypted password from user collection using bcryptjs.
   if (await bcryptjs.compare(password, user.password)) {
     const token = jwt.sign(
       { id: user._id, email: user.email },

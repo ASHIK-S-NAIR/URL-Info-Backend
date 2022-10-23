@@ -23,7 +23,7 @@ app.use("/api/v1/", authRoute);
 
 // default Route
 app.get("/", (req, res) => {
-  res.send("Projet initialized");
+  res.send("SuiteJat - URL Info project");
 });
 
 // Listening on PORT
